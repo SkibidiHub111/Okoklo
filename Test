@@ -26,6 +26,7 @@ end
 
 local function followAndHoldE(root, model)
     local holding = true
+
     task.spawn(function()
         while holding and model and model.Parent do
             VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.E, false, game)
