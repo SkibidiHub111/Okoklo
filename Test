@@ -2375,16 +2375,11 @@ until coinsStat
 
 local function spr()
     local list = {}
-    local seedShop = player.PlayerGui:FindFirstChild("Seed_Shop")
-    if seedShop and seedShop:FindFirstChild("Frame") and seedShop.Frame:FindFirstChild("ScrollingFrame") then
-        for _, v in ipairs(seedShop.Frame.ScrollingFrame:GetChildren()) do
-            if v:IsA("Frame") 
-                and not string.find(v.Name, "Padding") 
-                and v:FindFirstChild("Main_Frame") 
-                and v.Main_Frame:FindFirstChild("Cost_Text") 
-                and v.Main_Frame.Cost_Text.Text ~= "NO STOCK"
-                and v.Name ~= "ItemFrame" then
-                table.insert(list, v.Name)
+    local shopFolder = game:GetService("Workspace"):FindFirstChild("Shop") and game.Workspace.Shop:FindFirstChild("Seeds")
+    if shopFolder then
+        for _, item in pairs(shopFolder:GetChildren()) do
+            if item:IsA("Model") then
+                table.insert(list, item.Name)
             end
         end
     end
@@ -2401,14 +2396,25 @@ local function isIgnored(seedName)
 end
 
 spawn(function()
-    while getgenv().Config["Buy All Seed"] do
-        local coins = coinsStat.Value
-        for _, seedName in ipairs(spr()) do
-            if coins <= getgenv().Config["If Money"] or not isIgnored(seedName) then
-                game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuySeedStock"):FireServer(seedName)
-                task.wait(0.1)
+    while task.wait(5) do
+        if getgenv().Config["Buy All Seed"] then
+            local coins = coinsStat.Value
+            for _, seedName in ipairs(spr()) do
+                if coins <= getgenv().Config["If Money"] or not isIgnored(seedName) then
+                    game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuySeedStock"):FireServer(seedName)
+                    task.wait(0.1)
+                end
             end
         end
-        task.wait(5)
+    end
+end)
+
+getgenv().AutoPressE = true
+spawn(function()
+    local UIS = game:GetService("UserInputService")
+    while task.wait(0.1) do
+        if getgenv().Config["Auto Press E"] then
+            UIS.InputBegan:Fire({KeyCode = Enum.KeyCode.E}, false)
+        end
     end
 end)
