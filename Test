@@ -2365,42 +2365,42 @@ task.spawn(function()
     end
 end)
 
+local cfg = getgenv().Config
 local player = game.Players.LocalPlayer
 local coinsStat
 
-repeat
-    task.wait()
+repeat task.wait()
     coinsStat = player:FindFirstChild("leaderstats") and player.leaderstats:FindFirstChild("Sheckles")
 until coinsStat
 
-local function spr()
-    local list = {}
-    local shopFolder = game:GetService("Workspace"):FindFirstChild("Shop") and game.Workspace.Shop:FindFirstChild("Seeds")
+local function getAllSeeds()
+    local seeds = {}
+    local shopFolder = workspace:FindFirstChild("Shop") and workspace.Shop:FindFirstChild("Seeds")
     if shopFolder then
-        for _, item in pairs(shopFolder:GetChildren()) do
-            if item:IsA("Model") then
-                table.insert(list, item.Name)
+        for _, v in ipairs(shopFolder:GetChildren()) do
+            if v:IsA("Model") then
+                table.insert(seeds, v.Name)
             end
         end
     end
-    return list
+    return seeds
 end
 
-local function isIgnored(seedName)
-    for _, ignore in ipairs(getgenv().Config["Ignore Seed If Enough Money"]) do
-        if string.lower(seedName) == string.lower(ignore) then
+local function isIgnored(name)
+    for _, ignore in ipairs(cfg["Ignore Seed If Enough Money"]) do
+        if string.lower(ignore) == string.lower(name) then
             return true
         end
     end
     return false
 end
 
-spawn(function()
-    while task.wait(5) do
-        if getgenv().Config["Buy All Seed"] then
+task.spawn(function()
+    while task.wait(0.5) do -- loop liên tục mỗi 0.5s
+        if cfg["Buy All Seed"] then
             local coins = coinsStat.Value
-            for _, seedName in ipairs(spr()) do
-                if coins <= getgenv().Config["If Money"] or not isIgnored(seedName) then
+            for _, seedName in ipairs(getAllSeeds()) do
+                if coins <= cfg["If Money"] or not isIgnored(seedName) then
                     game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuySeedStock"):FireServer(seedName)
                     task.wait(0.1)
                 end
