@@ -2365,6 +2365,16 @@ task.spawn(function()
     end
 end)
 
+getgenv().AutoPressE = true
+spawn(function()
+    local UIS = game:GetService("UserInputService")
+    while task.wait(0.1) do
+        if getgenv().Config["Auto Press E"] then
+            UIS.InputBegan:Fire({KeyCode = Enum.KeyCode.E}, false)
+        end
+    end
+end)
+
 local player = game.Players.LocalPlayer
 local coinsStat
 
@@ -2407,18 +2417,8 @@ spawn(function()
         for _, seedName in ipairs(seeds) do
             if coins <= getgenv().Config["If Money"] or (coins > getgenv().Config["If Money"] and not isIgnored(seedName)) then
                 game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuySeedStock"):FireServer(seedName)
-                task.wait(0.5)
+                task.wait(0.1)
             end
-        end
-    end
-end)
-
-getgenv().AutoPressE = true
-spawn(function()
-    local UIS = game:GetService("UserInputService")
-    while task.wait(0.1) do
-        if getgenv().Config["Auto Press E"] then
-            UIS.InputBegan:Fire({KeyCode = Enum.KeyCode.E}, false)
         end
     end
 end)
